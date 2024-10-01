@@ -1,0 +1,7 @@
+node_modules
+.env
+dist
+documents/*
+sem_cnpj.txt
+sem_email.txt   
+sem_nome_valido.txt

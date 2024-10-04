@@ -31,7 +31,7 @@ export const logController = {
     res.status(204).send();
   },
   findByUserId: async (req: Request, res: Response) => {
-    const userId = req.user?.id;
+    const userId = req.params.userId;
 
     if (!userId) {
       return res.status(400).send("Usuário não encontrado");

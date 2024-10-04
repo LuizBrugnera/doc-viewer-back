@@ -16,7 +16,6 @@ export const roleAuthMiddleware = (
     if (!rolesAllowed.includes(role)) {
       return res.status(403).send("Acesso negado.");
     }
-
     next();
   } catch (error) {
     res.status(400).send("Token inválido.");

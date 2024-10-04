@@ -81,6 +81,84 @@ export const authController = {
       return res.status(500).send("Erro ao fazer login.");
     }
   },
+  loginCnpj: async (req: Request, res: Response) => {
+    try {
+      const { cnpj, password } = req.body;
+
+      const userExists = await userModel.findByCnpjWithPassword(cnpj);
+      if (!userExists) {
+        return res.status(400).send("CNPJ ou senha incorretos.");
+      }
+
+      const validPassword = await bcrypt.compare(password, userExists.password);
+      if (!validPassword) {
+        return res.status(400).send("CNPJ ou senha incorretos.");
+      }
+
+      const token = jwt.sign(
+        {
+          email: userExists.email,
+          name: userExists.name,
+          role: userExists.role,
+          id: userExists.id,
+          cpf: userExists.cpf,
+          rg: userExists.rg,
+          cnpj: userExists.cnpj,
+          birthdate: userExists.birthdate,
+          phone: userExists.phone,
+          cod: userExists.cod,
+          department: userExists.department,
+        },
+        process.env.SECRET_KEY as string,
+        {
+          expiresIn: "12h",
+        }
+      );
+      res.status(200).send(token);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send("Erro ao fazer login.");
+    }
+  },
+  loginCpf: async (req: Request, res: Response) => {
+    try {
+      const { cpf, password } = req.body;
+
+      const userExists = await userModel.findByCpfWithPassword(cpf);
+      if (!userExists) {
+        return res.status(400).send("Cpf ou senha incorretos.");
+      }
+
+      const validPassword = await bcrypt.compare(password, userExists.password);
+      if (!validPassword) {
+        return res.status(400).send("Cpf ou senha incorretos.");
+      }
+
+      const token = jwt.sign(
+        {
+          email: userExists.email,
+          name: userExists.name,
+          role: userExists.role,
+          id: userExists.id,
+          cpf: userExists.cpf,
+          rg: userExists.rg,
+          cnpj: userExists.cnpj,
+          birthdate: userExists.birthdate,
+          phone: userExists.phone,
+          cod: userExists.cod,
+          department: userExists.department,
+        },
+        process.env.SECRET_KEY as string,
+        {
+          expiresIn: "12h",
+        }
+      );
+      res.status(200).send(token);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send("Erro ao fazer login.");
+    }
+  },
   genereteCode: async (req: Request, res: Response) => {
     const { email } = req.body;
 

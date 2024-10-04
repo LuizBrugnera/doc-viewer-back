@@ -49,4 +49,22 @@ userRoutes.delete(
   userController.delete
 );
 
+userRoutes.get(
+  "/find-all-departments",
+  authMiddleware,
+  (req, res, next) => {
+    roleAuthMiddleware(req, res, next, ["admin"]);
+  },
+  userController.findAllUserDepartaments
+);
+
+userRoutes.post(
+  "/update-department",
+  authMiddleware,
+  (req, res, next) => {
+    roleAuthMiddleware(req, res, next, ["admin"]);
+  },
+  userController.adminUpdate
+);
+
 export default userRoutes;

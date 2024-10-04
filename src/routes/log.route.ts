@@ -24,7 +24,7 @@ logRoutes.delete(
 );
 
 logRoutes.get(
-  "/find-by-user",
+  "/find-by-user/:userId",
   authMiddleware,
   (req, res, next) => {
     roleAuthMiddleware(req, res, next, ["admin"]);

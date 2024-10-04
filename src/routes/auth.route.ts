@@ -8,6 +8,10 @@ authRoutes.post("/register", authController.register);
 
 authRoutes.post("/login", authController.login);
 
+authRoutes.post("/login-cpf", authController.loginCpf);
+
+authRoutes.post("/login-cnpj", authController.loginCnpj);
+
 authRoutes.post("/generate-code", authController.genereteCode);
 
 authRoutes.post("/verify-code", authController.verifyCode);

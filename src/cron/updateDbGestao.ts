@@ -2,6 +2,7 @@ import axios from "axios";
 import dotenv from "dotenv";
 import userModel from "../models/user.model";
 import * as fs from "fs";
+import bcrypt from "bcryptjs";
 
 dotenv.config();
 
@@ -136,6 +137,8 @@ const updateUsersDbWithGestao = async () => {
             if (!userExists) {
               console.log("Criando usuário " + contadorDeUsers);
               contadorDeUsers++;
+              const salt = await bcrypt.genSalt(10);
+              const hashPassword = await bcrypt.hash(password, salt);
               await userModel.create({
                 name: razao_social,
                 cod: id,
@@ -145,7 +148,7 @@ const updateUsersDbWithGestao = async () => {
                 department: "user",
                 role: "user",
                 cnpj: cnpj,
-                password,
+                password: hashPassword,
                 birthdate: data_nascimento,
                 phone: celular,
               });

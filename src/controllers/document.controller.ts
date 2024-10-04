@@ -96,7 +96,7 @@ export const documentController = {
       await logModel.create({
         action: "Documento adicionado",
         description: `Novo documento ${name} adicionado e pronto para download`,
-        userId: Number(userId),
+        userId: Number(req.user?.id),
       });
 
       res
@@ -162,7 +162,7 @@ export const documentController = {
       await logModel.create({
         action: "Documento adicionado",
         description: `Novo documento ${name} adicionado e pronto para download`,
-        userId: Number(userId),
+        userId: Number(req.user?.id),
       });
 
       res
@@ -262,7 +262,7 @@ export const documentController = {
       await logModel.create({
         action: "Documento excluído",
         description: `Documento ${documentId} excluído com sucesso`,
-        userId: Number(userId),
+        userId: Number(req.user?.id),
       });
 
       res.status(204).send();
@@ -554,7 +554,7 @@ export const documentController = {
       await logModel.create({
         action: "Documento adicionado",
         description: `Novo documento ${name} na pasta ${folder} adicionado e pronto para download`,
-        userId: Number(userId),
+        userId: Number(req.user?.id),
       });
 
       res

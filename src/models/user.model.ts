@@ -137,7 +137,7 @@ const userModel = {
 
   async findUsersByDepartment(department: string): Promise<UserOutput[]> {
     const [result] = await pool.query(
-      "SELECT id, name, email FROM users WHERE role = 'user'",
+      "SELECT id, name, email, cnpj FROM users WHERE role = 'user'",
       [department]
     );
 
@@ -147,6 +147,50 @@ const userModel = {
   async findUserByName(name: string): Promise<UserOutput | null> {
     const [result] = await pool.query("SELECT * FROM users WHERE name = ?", [
       name,
+    ]);
+
+    return (result as any)[0] || null;
+  },
+
+  async findAllUserDepartaments(): Promise<UserOutput[]> {
+    const [result] = await pool.query(
+      "SELECT * FROM users WHERE role = 'department'"
+    );
+
+    return result as any;
+  },
+  async updateUser(id: number, user: UserCreate): Promise<void> {
+    await pool.query(
+      "UPDATE users SET name = ?, email = ?, password = ?, role = ?, cnpj = ?, cod = ?, cpf = ?, phone = ?, rg = ?, department = ? WHERE id = ?",
+      [
+        user.name,
+        user.email,
+        user.password,
+        user.role,
+        user.cnpj,
+        user.cod,
+        user.cpf,
+        user.phone,
+        user.rg,
+        user.department,
+        id,
+      ]
+    );
+  },
+  async findByCpfWithPassword(
+    cpf: string
+  ): Promise<UserOutputWithPassword | null> {
+    const [result] = await pool.query("SELECT * FROM users WHERE cpf = ?", [
+      cpf,
+    ]);
+
+    return (result as any)[0] || null;
+  },
+  async findByCnpjWithPassword(
+    cnpj: string
+  ): Promise<UserOutputWithPassword | null> {
+    const [result] = await pool.query("SELECT * FROM users WHERE cnpj = ?", [
+      cnpj,
     ]);
 
     return (result as any)[0] || null;

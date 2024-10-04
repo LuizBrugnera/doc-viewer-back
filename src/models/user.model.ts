@@ -137,7 +137,7 @@ const userModel = {
 
   async findUsersByDepartment(department: string): Promise<UserOutput[]> {
     const [result] = await pool.query(
-      "SELECT id, name, email, cnpj FROM users WHERE role = 'user'",
+      "SELECT id, name, email, cnpj, phone, cod FROM users WHERE role = 'user'",
       [department]
     );
 

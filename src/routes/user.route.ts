@@ -67,4 +67,13 @@ userRoutes.post(
   userController.adminUpdate
 );
 
+userRoutes.post(
+  "/update-client",
+  authMiddleware,
+  (req, res, next) => {
+    roleAuthMiddleware(req, res, next, ["admin"]);
+  },
+  userController.adminUpdateClient
+);
+
 export default userRoutes;

@@ -58,7 +58,6 @@ export const userController = {
   },
 
   async adminUpdate(req: Request, res: Response) {
-    console.log("Update user by admin", req.body);
     try {
       const { id, name, email, password, department, phone, role } = req.body;
       const salt = await bcrypt.genSalt(10);
@@ -70,6 +69,31 @@ export const userController = {
         department,
         phone,
         role,
+      });
+
+      return res
+        .status(200)
+        .json({ message: "Usuário atualizado com sucesso" });
+    } catch (error) {
+      return res.status(400).json({ error: error });
+    }
+  },
+
+  async adminUpdateClient(req: Request, res: Response) {
+    try {
+      const { id, name, email, password, phone, cod, rg, cnpj } = req.body;
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(password, salt);
+      await userModel.updateUser(Number(id), {
+        name,
+        email,
+        password: passwordHash,
+        department: "user",
+        phone,
+        role: "user",
+        cod,
+        rg,
+        cnpj,
       });
 
       return res

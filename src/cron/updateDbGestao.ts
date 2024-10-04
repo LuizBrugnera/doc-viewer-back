@@ -76,57 +76,30 @@ const updateUsersDbWithGestao = async () => {
             data_nascimento,
           } = user;
 
-          if (!cnpj) {
-            contadorDeErros++;
-            console.log(`Usuário com id ${id} não possui cnpj válido.`);
-            console.log({
-              id,
-              razao_social,
-              email,
-              cpf,
-              rg,
-              cnpj,
-              celular,
-            });
-            messageWithOutCnpj += ` Usuário com id ${id} nome ${razao_social} não possui cnpj válido.\n`;
-            return;
-          }
-
-          if (!email) {
-            contadorDeErros++;
-            console.log(`Usuário com id ${id} não possui email válido.`);
-            console.log({
-              id,
-              razao_social,
-              email,
-              cpf,
-              rg,
-              cnpj,
-              celular,
-            });
-            messageWithOutEmail += ` Usuário com id ${id} nome ${razao_social} não possui email válido.\n`;
-            return;
-          }
-
           if (!razao_social) {
             contadorDeErros++;
-            console.log(
-              `Usuário com id ${id} não possui nome razao social válido.`
-            );
-            console.log({
-              id,
-              razao_social,
-              email,
-              cpf,
-              rg,
-              cnpj,
-              celular,
-            });
+            //console.log(
+            //  `Usuário com id ${id} não possui nome razao social válido.`
+            //);
+
             messageWithOutName += ` Usuário com id ${id} nome ${cnpj} não possui nome válido.\n`;
             return;
           }
+          let password = "";
 
-          const password = cnpj.replace(".", "").replace(".", "").slice(0, 8);
+          if (!cnpj) {
+            if (cpf) {
+              password = cpf.replace(".", "").replace(".", "").slice(0, 8);
+            } else {
+              contadorDeErros++;
+              console.log(
+                `Usuário com id ${id} não possui CPF ou CNPJ válido.`
+              );
+              return;
+            }
+          } else {
+            password = cnpj.replace(".", "").replace(".", "").slice(0, 8);
+          }
 
           if (!email) {
             email = password + "@example.com";
@@ -162,18 +135,7 @@ const updateUsersDbWithGestao = async () => {
       await Promise.all(userPromises);
     }
 
-    console.log(
-      "Processo finalizado. Total de usuários criados:",
-      contadorDeUsers
-    );
-    console.log(
-      "Processo finalizado. Total de usuários criados:",
-      contadorDeErros
-    );
-
-    logErrorToFile("sem_cnpj.txt", messageWithOutCnpj);
-    logErrorToFile("sem_email.txt", messageWithOutEmail);
-    logErrorToFile("sem_nome_valido.txt", messageWithOutName);
+    // logErrorToFile("sem_nome_valido.txt", messageWithOutName);
 
     return;
   } catch (error) {

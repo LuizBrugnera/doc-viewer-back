@@ -80,6 +80,9 @@ export const documentModel = {
         SELECT * FROM documents WHERE  
         (folder = "contratos" or folder = "ordensServico") ORDER BY date DESC;
       `,
+      admin: `
+        SELECT * FROM documents ORDER BY date DESC;
+        `,
     } as { [key: string]: string };
 
     const query = queries[department];

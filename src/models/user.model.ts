@@ -157,16 +157,16 @@ const userModel = {
     const userNames = users as { name: string }[];
     const words = fileName.split(" ");
 
-    const relevantWords = words.filter((word) =>
-      userNames.some((user) =>
-        user.name.includes(word)
-      )
+    let relevantWords = words.filter((word) =>
+      userNames.some((user) => user.name.includes(word))
     );
+
+    relevantWords = relevantWords.filter((element) => element !== "-");
 
     if (relevantWords.length === 0) {
       return null;
     }
-
+    console.log(relevantWords);
     const query = `SELECT * FROM users WHERE ${relevantWords
       .map(() => "name LIKE ?")
       .join(" AND ")} LIMIT 1`;

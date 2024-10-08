@@ -119,6 +119,22 @@ const userModel = {
       department,
     }: Partial<UserOutput>
   ): Promise<void> {
+    const user = await this.findById(id);
+
+    if (!user) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    name = name || user.name;
+    email = email || user.email;
+    cpf = cpf || user.cpf;
+    cnpj = cnpj || user.cnpj;
+    phone = phone || user.phone;
+    rg = rg || user.rg;
+    cod = cod || user.cod;
+    birthdate = birthdate || user.birthdate;
+    department = department || user.department;
+
     await pool.query(
       "UPDATE users SET name = ?, email = ?, cpf = ?, cnpj = ?, phone = ?, rg = ?, cod = ?, birthdate = ?, department = ? WHERE id = ?",
       [name, email, cpf, cnpj, phone, rg, cod, birthdate, department, id]
@@ -191,6 +207,21 @@ const userModel = {
     return result as any;
   },
   async updateUser(id: number, user: UserCreate): Promise<void> {
+    const userFinded = await this.findById(id);
+
+    if (!userFinded) {
+      throw new Error("Usuário não encontrado");
+    }
+    userFinded.name = userFinded.name || userFinded.name;
+    userFinded.email = userFinded.email || userFinded.email;
+    userFinded.cpf = userFinded.cpf || userFinded.cpf;
+    userFinded.cnpj = userFinded.cnpj || userFinded.cnpj;
+    userFinded.phone = userFinded.phone || userFinded.phone;
+    userFinded.rg = userFinded.rg || userFinded.rg;
+    userFinded.cod = userFinded.cod || userFinded.cod;
+    userFinded.birthdate = userFinded.birthdate || userFinded.birthdate;
+    userFinded.department = userFinded.department || userFinded.department;
+
     await pool.query(
       "UPDATE users SET name = ?, email = ?, password = ?, role = ?, cnpj = ?, cod = ?, cpf = ?, phone = ?, rg = ?, department = ? WHERE id = ?",
       [

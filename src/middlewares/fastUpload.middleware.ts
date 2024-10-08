@@ -14,11 +14,20 @@ function getFileNameWithoutExtension(fileName: string): string {
   return fileName.substring(0, lastDotIndex);
 }
 
+function normalizeText(text: string) {
+  const textNormalized = text.normalize("NFD");
+  const textWithOutAccents = textNormalized.replace(/[\u0300-\u036f]/g, "");
+  const textFinal = textWithOutAccents.replace(/ç/g, "c").replace(/Ç/g, "C");
+  return textFinal.toUpperCase();
+}
+
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
     try {
-      const filenameWithoutExtension = getFileNameWithoutExtension(
-        Buffer.from(file.originalname, "latin1").toString("utf8")
+      const filenameWithoutExtension = normalizeText(
+        getFileNameWithoutExtension(
+          Buffer.from(file.originalname, "latin1").toString("utf8")
+        )
       );
 
       const user = await userModel.findUserByPartialName(

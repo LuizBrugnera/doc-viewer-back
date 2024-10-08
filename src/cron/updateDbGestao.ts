@@ -21,6 +21,13 @@ const logErrorToFile = (filename: string, message: string) => {
   }
 };
 
+const normalizeText = (text: string) => {
+  const textNormalized = text.normalize("NFD");
+  const textWithOutAccents = textNormalized.replace(/[\u0300-\u036f]/g, "");
+  const textFinal = textWithOutAccents.replace(/ç/g, "c").replace(/Ç/g, "C");
+  return textFinal.toUpperCase();
+};
+
 const updateUsersDbWithGestao = async () => {
   try {
     const initialResponse = await axios.get(`${API_URL}${1}`, {
@@ -110,10 +117,11 @@ const updateUsersDbWithGestao = async () => {
             if (!userExists) {
               console.log("Criando usuário " + contadorDeUsers);
               contadorDeUsers++;
+
               const salt = await bcrypt.genSalt(10);
               const hashPassword = await bcrypt.hash(password, salt);
               await userModel.create({
-                name: razao_social,
+                name: normalizeText(razao_social),
                 cod: id,
                 email,
                 cpf,

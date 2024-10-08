@@ -159,7 +159,7 @@ const userModel = {
 
     const relevantWords = words.filter((word) =>
       userNames.some((user) =>
-        user.name.toLowerCase().includes(word.toLowerCase())
+        user.name.includes(word)
       )
     );
 

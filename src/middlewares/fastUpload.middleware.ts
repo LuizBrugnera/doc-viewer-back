@@ -18,7 +18,7 @@ function normalizeText(text: string) {
   const textNormalized = text.normalize("NFD");
   const textWithOutAccents = textNormalized.replace(/[\u0300-\u036f]/g, "");
   const textFinal = textWithOutAccents.replace(/ç/g, "c").replace(/Ç/g, "C");
-  return textFinal.toUpperCase();
+  return textFinal;
 }
 
 const storage = multer.diskStorage({

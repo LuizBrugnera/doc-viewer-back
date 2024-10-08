@@ -16,28 +16,30 @@ function getFileNameWithoutExtension(fileName: string): string {
 
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
-    const filenameWithoutExtension = getFileNameWithoutExtension(
-      Buffer.from(file.originalname, "latin1").toString("utf8")
-    );
-    const user = await userModel.findUserByPartialName(
-      filenameWithoutExtension.trim()
-    );
+    try {
+      const filenameWithoutExtension = getFileNameWithoutExtension(
+        Buffer.from(file.originalname, "latin1").toString("utf8")
+      );
 
-    console.log(user);
+      const user = await userModel.findUserByPartialName(
+        filenameWithoutExtension.trim()
+      );
 
-    if (!user) {
-      req.documentUserId = 0;
+      if (!user) {
+        return cb(new Error("Usuário não encontrado, upload descartado"), "");
+      }
+
+      req.documentUserId = user.id;
+      const userDir = path.join(__dirname, `../../documents/${user.id}`);
+
+      if (!fs.existsSync(userDir)) {
+        fs.mkdirSync(userDir, { recursive: true });
+      }
+
+      cb(null, userDir);
+    } catch (error) {
+      cb(new Error(String(error)), "");
     }
-
-    req.documentUserId = user?.id;
-
-    const userDir = path.join(__dirname, `../../documents/${user?.id}`);
-
-    if (!fs.existsSync(userDir)) {
-      fs.mkdirSync(userDir, { recursive: true });
-    }
-
-    cb(null, userDir);
   },
   filename: (req, file, cb) => {
     const tempFilename = uuidv4();

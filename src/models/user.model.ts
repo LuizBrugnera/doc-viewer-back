@@ -152,6 +152,37 @@ const userModel = {
     return (result as any)[0] || null;
   },
 
+  async findUserByPartialName(fileName: string) {
+    const [users] = await pool.query("SELECT name FROM users");
+    const userNames = users as { name: string }[];
+    const words = fileName.split(" ");
+
+    const relevantWords = words.filter((word) =>
+      userNames.some((user) =>
+        user.name.toLowerCase().includes(word.toLowerCase())
+      )
+    );
+
+    if (relevantWords.length === 0) {
+      return null;
+    }
+
+    const query = `SELECT * FROM users WHERE ${relevantWords
+      .map(() => "name LIKE ?")
+      .join(" AND ")} LIMIT 1`;
+
+    const values = relevantWords.map((word) => `%${word}%`);
+
+    try {
+      const [result] = await pool.query(query, values);
+
+      return (result as any)[0] || null;
+    } catch (error) {
+      console.error("Erro na consulta ao banco de dados:", error);
+      throw new Error("Erro ao buscar usuário no banco de dados");
+    }
+  },
+
   async findAllUserDepartaments(): Promise<UserOutput[]> {
     const [result] = await pool.query(
       "SELECT * FROM users WHERE role = 'department'"

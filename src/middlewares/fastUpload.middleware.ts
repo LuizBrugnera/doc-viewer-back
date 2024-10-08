@@ -17,9 +17,13 @@ function getFileNameWithoutExtension(fileName: string): string {
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
     const filenameWithoutExtension = getFileNameWithoutExtension(
-      file.originalname
+      Buffer.from(file.originalname, "latin1").toString("utf8")
     );
-    const user = await userModel.findUserByName(filenameWithoutExtension);
+    const user = await userModel.findUserByPartialName(
+      filenameWithoutExtension.trim()
+    );
+
+    console.log(user);
 
     if (!user) {
       req.documentUserId = 0;

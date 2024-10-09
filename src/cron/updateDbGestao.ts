@@ -24,7 +24,10 @@ const logErrorToFile = (filename: string, message: string) => {
 const normalizeText = (text: string) => {
   const textNormalized = text.normalize("NFD");
   const textWithOutAccents = textNormalized.replace(/[\u0300-\u036f]/g, "");
-  const textFinal = textWithOutAccents.replace(/ç/g, "c").replace(/Ç/g, "C");
+  const textWithOutCedilha = textWithOutAccents
+    .replace(/ç/g, "c")
+    .replace(/Ç/g, "C");
+  const textFinal = textWithOutCedilha.replace(/ó/g, "o").replace(/Ó/g, "O");
   return textFinal.toUpperCase();
 };
 
@@ -38,11 +41,11 @@ const updateUsersDbWithGestao = async () => {
     });
 
     const pages = initialResponse.data.meta.total_paginas;
-    let contadorDeUsers = 0;
-    let contadorDeErros = 0;
-    let messageWithOutCnpj = "";
-    let messageWithOutEmail = "";
-    let messageWithOutName = "";
+    //let contadorDeUsers = 0;
+    //let contadorDeErros = 0;
+    //let messageWithOutCnpj = "";
+    //let messageWithOutName = "";
+    //let contadorDeUsuariosRecebidos = 0;
     for (let i = 1; i <= pages; i++) {
       console.log("Processando página " + i);
       let pageResponse;
@@ -84,12 +87,14 @@ const updateUsersDbWithGestao = async () => {
           } = user;
 
           if (!razao_social) {
-            contadorDeErros++;
+            //contadorDeErros++;
             //console.log(
             //  `Usuário com id ${id} não possui nome razao social válido.`
             //);
 
-            messageWithOutName += ` Usuário com id ${id} nome ${cnpj} não possui nome válido.\n`;
+            //messageWithOutName += ` Usuário com id ${id} cnpj ${
+            //  cnpj || "Não Informado"
+            //} cpf ${cpf || "Não Informado"} não possui nome válido.\n`;
             return;
           }
           let password = "";
@@ -98,10 +103,15 @@ const updateUsersDbWithGestao = async () => {
             if (cpf) {
               password = cpf.replace(".", "").replace(".", "").slice(0, 8);
             } else {
-              contadorDeErros++;
-              console.log(
-                `Usuário com id ${id} não possui CPF ou CNPJ válido.`
-              );
+              //contadorDeErros++;
+              //console.log(
+              //  `Usuário com id ${id} e nome ${
+              //    razao_social || "Não Informado"
+              //  } não possui CPF ou CNPJ válido.`
+              //);
+              //messageWithOutCnpj += `Usuário com id ${id} e nome ${
+              //  razao_social || "Não Informado"
+              //} não possui CPF ou CNPJ válido.`;
               return;
             }
           } else {
@@ -113,10 +123,13 @@ const updateUsersDbWithGestao = async () => {
           }
 
           try {
-            const userExists = await userModel.findByEmail(email);
+            const userExists = await userModel.findByCod(id);
+
             if (!userExists) {
-              console.log("Criando usuário " + contadorDeUsers);
-              contadorDeUsers++;
+              //contadorDeUsuariosRecebidos++;
+
+              //console.log("Criando usuário " + contadorDeUsers);
+              //contadorDeUsers++;
 
               const salt = await bcrypt.genSalt(10);
               const hashPassword = await bcrypt.hash(password, salt);
@@ -142,9 +155,6 @@ const updateUsersDbWithGestao = async () => {
 
       await Promise.all(userPromises);
     }
-
-    // logErrorToFile("sem_nome_valido.txt", messageWithOutName);
-
     return;
   } catch (error) {
     console.error("Erro no processo de atualização dos usuários:", error);

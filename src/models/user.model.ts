@@ -85,6 +85,14 @@ const userModel = {
     return (result as any)[0] || null;
   },
 
+  async findByCod(cod: string): Promise<UserOutput | null> {
+    const [result] = await pool.query("SELECT * FROM users WHERE cod = ?", [
+      cod,
+    ]);
+
+    return (result as any)[0] || null;
+  },
+
   async findById(id: number): Promise<UserOutputWithPassword | null> {
     const [result] = await pool.query("SELECT * FROM users WHERE id = ?", [id]);
 

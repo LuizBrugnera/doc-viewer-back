@@ -178,7 +178,9 @@ const userModel = {
     );
 
     relevantWords = relevantWords.filter((element) => element !== "-");
-
+    relevantWords = relevantWords.filter((element) => {
+      return !(typeof element === "string" && /^\d{1,4}$/.test(element));
+    });
     if (relevantWords.length === 0) {
       return null;
     }

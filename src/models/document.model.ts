@@ -50,6 +50,18 @@ export const documentModel = {
   delete: async (id: number): Promise<void> => {
     await pool.query("DELETE FROM documents WHERE id = ?", [id]);
   },
+  findAllWithUserNames: async (): Promise<
+    { id: number; userId: number; name: string; username: string }[]
+  > => {
+    const [result] = await pool.query(
+      `SELECT documents.id, documents.userId, documents.name, users.name AS username
+      FROM documents
+      JOIN users ON documents.userId = users.id;`
+    );
+
+    return result as any;
+  },
+
   findById: async (id: number): Promise<DocumentOutput | null> => {
     const [result] = await pool.query("SELECT * FROM documents WHERE id = ?", [
       id,
@@ -102,5 +114,11 @@ export const documentModel = {
       [userId, folder]
     );
     return result as any;
+  },
+  updateUserId: async (id: number, userId: number): Promise<void> => {
+    await pool.query("UPDATE documents SET userId = ? WHERE id = ?", [
+      userId,
+      id,
+    ]);
   },
 };

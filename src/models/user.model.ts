@@ -176,37 +176,21 @@ const userModel = {
     return (result as any)[0] || null;
   },
 
-  async findUserByPartialName(fileName: string) {
+  async findUserByPartialName(fileName: string): Promise<UserOutput | null> {
     const [users] = await pool.query("SELECT name FROM users");
     const userNames = users as { name: string }[];
-    const words = fileName.split(" ");
+    for (let i = 0; i < userNames.length; i++) {
+      if (fileName.includes(userNames[i].name) && userNames[i].name !== "") {
+        const username = userNames[i].name;
+        const user = await pool.query("SELECT * FROM users WHERE name = ?", [
+          username,
+        ]);
 
-    let relevantWords = words.filter((word) =>
-      userNames.some((user) => user.name.includes(word))
-    );
-
-    relevantWords = relevantWords.filter((element) => element !== "-");
-    relevantWords = relevantWords.filter((element) => {
-      return !(typeof element === "string" && /^\d{1,4}$/.test(element));
-    });
-    if (relevantWords.length === 0) {
-      return null;
+        return (user as any)[0] || null;
+      }
     }
-    console.log(relevantWords);
-    const query = `SELECT * FROM users WHERE ${relevantWords
-      .map(() => "name LIKE ?")
-      .join(" AND ")} LIMIT 1`;
 
-    const values = relevantWords.map((word) => `%${word}%`);
-
-    try {
-      const [result] = await pool.query(query, values);
-
-      return (result as any)[0] || null;
-    } catch (error) {
-      console.error("Erro na consulta ao banco de dados:", error);
-      throw new Error("Erro ao buscar usuário no banco de dados");
-    }
+    return null;
   },
 
   async findAllUserDepartaments(): Promise<UserOutput[]> {

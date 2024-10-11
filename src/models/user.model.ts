@@ -1,3 +1,4 @@
+import { usernamesCache } from "../cache/usernamesCache";
 import pool from "../database/db";
 
 interface UserCreate {
@@ -177,16 +178,26 @@ const userModel = {
   },
 
   async findUserByPartialName(fileName: string): Promise<UserOutput | null> {
-    const [users] = await pool.query("SELECT name FROM users");
-    const userNames = users as { name: string }[];
+    if (
+      usernamesCache.users.length === 0 ||
+      usernamesCache.lastUpdate === null ||
+      new Date(usernamesCache.lastUpdate.getTime() + 30 * 60 * 1000) <
+        new Date()
+    ) {
+      const [users] = await pool.query("SELECT name FROM users");
+      usernamesCache.users = users as { name: string }[];
+      usernamesCache.lastUpdate = new Date();
+    }
+
+    const userNames = usernamesCache.users;
     for (let i = 0; i < userNames.length; i++) {
       if (fileName.includes(userNames[i].name) && userNames[i].name !== "") {
         const username = userNames[i].name;
         const user = await pool.query("SELECT * FROM users WHERE name = ?", [
           username,
         ]);
-
-        return (user as any)[0] || null;
+        console.log("user dentro", user);
+        return (user as any)[0][0] || null;
       }
     }
 

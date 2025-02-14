@@ -46,6 +46,7 @@ const updateUsersDbWithGestao = async () => {
     //let messageWithOutCnpj = "";
     //let messageWithOutName = "";
     //let contadorDeUsuariosRecebidos = 0;
+    let messageWithOutEmail = "";
     for (let i = 1; i <= pages; i++) {
       console.log("Processando página " + i);
       let pageResponse;
@@ -86,7 +87,7 @@ const updateUsersDbWithGestao = async () => {
             data_nascimento,
           } = user;
 
-          if (!razao_social) {
+          if (razao_social) {
             //contadorDeErros++;
             //console.log(
             //  `Usuário com id ${id} não possui nome razao social válido.`
@@ -119,6 +120,9 @@ const updateUsersDbWithGestao = async () => {
           }
 
           if (!email) {
+            messageWithOutEmail += `\nUsuário com id ${id} e nome ${
+              razao_social || "Não Informado"
+            } não possui email válido.`;
             email = password + "@example.com";
           }
 
@@ -155,6 +159,7 @@ const updateUsersDbWithGestao = async () => {
 
       await Promise.all(userPromises);
     }
+    logErrorToFile("sem_email.txt", messageWithOutEmail);
     return;
   } catch (error) {
     console.error("Erro no processo de atualização dos usuários:", error);

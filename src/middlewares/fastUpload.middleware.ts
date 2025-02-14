@@ -29,11 +29,9 @@ const storage = multer.diskStorage({
           Buffer.from(file.originalname, "latin1").toString("utf8")
         )
       );
-
       const user = await userModel.findUserByPartialName(
         filenameWithoutExtension.trim()
       );
-
       if (!user) {
         return cb(new Error("Usuário não encontrado, upload descartado"), "");
       }

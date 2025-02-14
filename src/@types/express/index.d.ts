@@ -1,9 +1,9 @@
 interface UserAuth {
   id: number;
   email: string;
-  cnpj: string;
-  cpf: string;
-  cod: string;
+  cnpj?: string;
+  cpf?: string;
+  cod?: string;
   department: string;
   role: string;
   iat: number;
